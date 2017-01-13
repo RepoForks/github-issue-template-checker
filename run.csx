@@ -18,7 +18,8 @@ private static async Task ProcessIssueAsync(dynamic data)
 {
     if(data?.action != "opened")
         return;
-
+    
+    var creator = (string)data.issue.user.login; 
     var owner = (string)data.repository.owner.login;
     var repository = (string)data.repository.name;    
     var repositoryId = (long)data.repository.id;
@@ -28,7 +29,7 @@ private static async Task ProcessIssueAsync(dynamic data)
     var templateLines = (await GetTemplateElements(owner, repository, branch)).ToArray();
 
     var matchingQuote = CheckIssueWithTemplate(issueLines, templateLines);
-    var message = GetMessage("smstuebe", matchingQuote);
+    var message = GetMessage(creator, matchingQuote);
     await CreateCommentAsync(repositoryId, (int)data.issue.number, message);
 }
 
